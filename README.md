@@ -6,6 +6,12 @@ This project is a proof of concept that integrates websites with ChatGPT using l
 
 ## Getting Started
 
+Update your `.env` file with the following
+
+```
+OPENAI_API_KEY="Your-Key"
+```
+
 First, run the development server:
 
 ```bash
