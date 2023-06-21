@@ -42,8 +42,6 @@ import { CheerioWebBaseLoader } from "langchain/document_loaders/web/cheerio";
 export const runtime = "edge";
 
 export async function POST(req: Request) {
-  console.log("hey");
-
   const { messages } = await req.json();
   const { stream, handlers } = LangChainStream();
 
