@@ -1,9 +1,14 @@
 "use client";
 
-import { useChat } from "ai/react";
+import { useChat, useCompletion } from "ai/react";
 
 export default function Chat() {
-  const { messages, input, handleInputChange, handleSubmit } = useChat();
+  const { messages, input, handleInputChange, handleSubmit } = useChat({
+    onResponse: (res) => console.log(res, "res"), onFinish(message) {
+      console.log('message', message);
+
+    },
+  });
   return (
     <div className="mx-auto w-full max-w-md py-24 flex flex-col text-slate-500">
       {messages.length > 0 &&
