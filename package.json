@@ -19,6 +19,7 @@
     "eslint": "8.43.0",
     "eslint-config-next": "13.4.6",
     "faiss-node": "^0.2.1",
+    "googleapis": "^118.0.0",
     "langchain": "^0.0.96",
     "next": "13.4.6",
     "openai": "^3.3.0",

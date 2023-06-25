@@ -4,9 +4,12 @@ import { useChat } from "ai/react";
 import BackgroundSVG from "./assets/bg";
 import Button from "./components/Button";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
-import { useState } from "react";
+import { use, useEffect, useRef, useState } from "react";
+import { AddressMap } from "./components/Map";
+import { Message } from "ai";
 
 export default function Chat() {
+  const [submitted, setSubmitted] = useState(false);
   const [parent] = useAutoAnimate();
   const [startActionPending, setStartActionPending] = useState(true);
 
@@ -18,13 +21,36 @@ export default function Chat() {
     console.log("onLeave called");
     setStartActionPending(false);
   };
+  console.log(navigator.language);
 
   const { messages, input, handleInputChange, handleSubmit } = useChat({
     onResponse: (res) => console.log(res, "res"),
     onFinish(message) {
       console.log("message", message);
     },
+    headers: {
+      lang: navigator.language,
+    },
   });
+  const { messages: actionMessages, append: actionAppend } = useChat({
+    initialInput: "summarize articles",
+    api: "/api/action",
+    onResponse: (res) => console.log(res, "res"),
+    onFinish(message) {
+      console.log("message", message);
+    },
+    headers: {
+      lang: navigator.language,
+    },
+  });
+
+  useEffect(() => {
+    actionAppend({
+      content: "please summarize the following articles",
+      role: "system",
+    });
+  }, []);
+
   return (
     <div className="relative h-screen overflow-hidden">
       <div className="mx-4 pt-4 pb-24 flex flex-col text-white absolute z-20 overflow-y-scroll w-full max-h-full">
@@ -50,8 +76,28 @@ export default function Chat() {
                 Actions
               </h3>
               <div className="flex flex-row gap-x-4 pb-4">
-                <div className="h-60 w-full bg-black rounded-lg"></div>
-                <div className="h-60 w-full bg-black rounded-lg"></div>
+                <div className="h-60 w-full bg-white rounded-lg overflow-y-hidden">
+                  {/* TODO: Remove hidden form and do things properly */}
+                  <div className="h-60 overflow-y-hidden">
+                    {actionMessages.length > 0 &&
+                      actionMessages.splice(0, 1).map((m) => (
+                        <div
+                          key={m.id}
+                          className={`whitespace-pre-wrap text-xs`}
+                        >
+                          <div className="flex flex-col">
+                            <div>{m.content}</div>
+                            <div className="text-xs italic pt-2">
+                              {m.role == "user" ? "" : ""}
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                  </div>
+                </div>
+                <div className="h-60 w-full bg-black rounded-lg">
+                  <AddressMap />
+                </div>
               </div>
               <h4 className="font-medium text-slate-600 text-sm pb-2">
                 More information
@@ -96,6 +142,7 @@ export default function Chat() {
         <form onSubmit={handleSubmit} className="flex items-center mx-2">
           {/* TODO: Build chips for automatic */}
           <input
+            name="myInput"
             className="focus-visible:border-blue-400 backdrop-blur-sm fixed max-w-md bottom-4 rounded-full right-4 text-white placeholder:text-white left-4 border-white text-sm p-2 px-4 border bg-transparent"
             value={input}
             placeholder="Say something..."

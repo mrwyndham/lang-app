@@ -44,6 +44,7 @@ export const runtime = "edge";
 export async function POST(req: Request) {
   const { messages } = await req.json();
   const { stream, handlers } = LangChainStream();
+  console.log("req", req.headers.get("lang"));
 
   console.log(handlers);
   console.log(messages.at(-1).content);
@@ -253,16 +254,19 @@ export async function POST(req: Request) {
   //Takes the users message (the last on the array) as the query and the subsequent messages as the context
 
   const input = {
-    query: messages.at(-1).content,
+    query: `please respond to the following message in the following language ${req.headers.get(
+      "lang"
+    )}: ${messages.at(-1).content}`,
     messages: (messages as Message[]).map((m) =>
       m.role == "user"
         ? new HumanChatMessage(m.content)
         : new AIChatMessage(m.content)
     ),
   };
+  console.log(input.query);
 
   //Calls the chain with the input
-  const response = await chain.call(input);
+  chain.call(input);
 
   // console.log(
   //   (await response).sourceDocuments.map((x: any) => x.metadata.source)

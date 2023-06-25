@@ -45,6 +45,7 @@ export async function POST(req: Request) {
   const { messages } = await req.json();
   const { stream, handlers } = LangChainStream();
 
+  console.log("action");
   console.log(handlers);
   console.log(messages.at(-1).content);
   //Provide URLs
