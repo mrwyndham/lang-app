@@ -1,36 +1,45 @@
+import { NextApiRequest, NextApiResponse } from "next";
 import { google } from "googleapis";
-import keys from "../../key.json";
 
-export default function handler(req: any, res: any) {
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
+  // Set up OAuth2 credentials
+  const credentials = {
+    client_email: "YOUR_CLIENT_EMAIL",
+    private_key: "YOUR_PRIVATE_KEY",
+  };
+
+  // Set up the Google Sheets API
+  const sheets = google.sheets({ version: "v4", auth: credentials });
+
+  // Define the spreadsheet ID and range
+  const spreadsheetId = "YOUR_SPREADSHEET_ID";
+  const range = "Sheet1!A:D";
+
+  // Define the values to append
+  const values: string[][] = [
+    ["16/1/2021 17:30:15", "-32.142018", "115.888786", "yes"],
+    ["16/1/2021 18:02:41", "-32.136237", "115.870964", "no"],
+  ];
+
   try {
-    const client = new google.auth.JWT(
-      keys.client_email,
-      undefined,
-      keys.private_key,
-      ["https://www.googleapis.com/auth/spreadsheets"]
-    );
-
-    client.authorize(async function (err, tokens) {
-      if (err) {
-        return res.status(400).send(JSON.stringify({ error: true }));
-      }
-
-      const gsapi = google.sheets({ version: "v4", auth: client });
-
-      //CUSTOMIZATION FROM HERE
-      const opt = {
-        spreadsheetId: "1mMuS9AKeXdj8T5accJZ151KWoCccWRPtd-6_IqEQppc",
-        range: "Sheet1!A2:A",
-      };
-
-      let data = await gsapi.spreadsheets.values.get(opt);
-      return res
-        .status(400)
-        .send(JSON.stringify({ error: false, data: data.data.values }));
+    // Append the values to the spreadsheet
+    await sheets.spreadsheets.values.append({
+      spreadsheetId,
+      range,
+      valueInputOption: "USER_ENTERED",
+      requestBody: {
+        values,
+      },
     });
-  } catch (e: any) {
-    return res
-      .status(400)
-      .send(JSON.stringify({ error: true, message: e.message }));
+
+    res.status(200).json({ message: "Values appended successfully!" });
+  } catch (error) {
+    console.error("Error appending values:", error);
+    res
+      .status(500)
+      .json({ error: "An error occurred while updating the Google Sheet." });
   }
 }

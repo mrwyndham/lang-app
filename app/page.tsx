@@ -46,10 +46,15 @@ export default function Chat() {
 
   useEffect(() => {
     actionAppend({
-      content: "please summarize the following articles",
+      content:
+        "please summarize the given text in dotpoint format be short and be susinct",
       role: "system",
     });
   }, []);
+
+  useEffect(() => {
+    console.log(actionMessages);
+  }, [actionMessages]);
 
   return (
     <div className="relative h-screen overflow-hidden">
@@ -76,7 +81,7 @@ export default function Chat() {
                 Actions
               </h3>
               <div className="flex flex-row gap-x-4 pb-4">
-                <div className="h-60 w-full bg-white rounded-lg overflow-y-hidden">
+                <div className="h-60 w-full bg-white rounded-lg text-slate-600 overflow-y-hidden">
                   {/* TODO: Remove hidden form and do things properly */}
                   <div className="h-60 overflow-y-hidden">
                     {actionMessages.length > 0 &&
