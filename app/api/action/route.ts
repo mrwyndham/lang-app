@@ -251,7 +251,6 @@ export async function POST(req: Request) {
   });
 
   //Takes the users message (the last on the array) as the query and the subsequent messages as the context
-
   const input = {
     query: messages.at(-1).content,
     messages: (messages as Message[]).map((m) =>
@@ -264,9 +263,9 @@ export async function POST(req: Request) {
   //Calls the chain with the input
   const response = await chain.call(input);
 
-  // console.log(
-  //   (await response).sourceDocuments.map((x: any) => x.metadata.source)
-  // );
+  console.log(
+    (await response).sourceDocuments.map((x: any) => x.metadata.source)
+  );
 
   //Response is streamed. Awaits on the call interrupt this
   return new StreamingTextResponse(stream);

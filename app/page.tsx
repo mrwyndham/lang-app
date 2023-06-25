@@ -72,20 +72,29 @@ export default function Chat() {
               messages.map((m) => (
                 <div
                   key={m.id}
-                  className={`whitespace-pre-wrap py-2 bg-white px-4 text-sm w-fit mb-4 ${
+                  className={`whitespace-pre-wrap py-2 px-4 text-sm w-fit mb-4 ${
                     m.role == "user"
-                      ? "ml-auto rounded-tl-2xl rounded-tr-2xl rounded-bl-2xl text-black"
+                      ? "ml-auto rounded-tl-2xl rounded-tr-2xl rounded-bl-2xl bg-white text-black"
                       : "rounded-tl-2xl rounded-tr-2xl rounded-br-2xl bg-slate-800 text-white"
                   }`}
                 >
-                  {m.role == "user" ? "User: " : "AI: "}
-                  {m.content}
+                  <div className="flex flex-col">
+                    <div>
+                      {m.role == "user" ? "User: " : "AI: "}
+                      {m.content}
+                    </div>
+                    <div className="text-xs italic pt-2">
+                      {m.role == "user" ? "" : "Sources:"}
+                      {m.role == "user" ? "" : " www.dfes.com.au"}
+                    </div>
+                  </div>
                 </div>
               ))}
           </div>
         </div>
 
         <form onSubmit={handleSubmit} className="flex items-center mx-2">
+          {/* TODO: Build chips for automatic */}
           <input
             className="focus-visible:border-blue-400 backdrop-blur-sm fixed max-w-md bottom-4 rounded-full right-4 text-white placeholder:text-white left-4 border-white text-sm p-2 px-4 border bg-transparent"
             value={input}
